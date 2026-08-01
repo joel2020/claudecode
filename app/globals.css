@@ -383,9 +383,9 @@ main li::marker {
 
 /* Placeholder / verification note — coral is reserved for disclosure */
 .note-disclosure {
-  border-left: 3px solid var(--clay);
   background: var(--clay-soft);
-  border-radius: 0 var(--radius-ctrl) var(--radius-ctrl) 0;
+  border: 1px solid color-mix(in srgb, var(--clay) 35%, var(--clay-soft));
+  border-radius: var(--radius-ctrl);
   padding: 14px 18px;
   font-size: 0.95rem;
   color: #6b3325;
@@ -1074,7 +1074,8 @@ main li::marker {
   height: 100%;
   background: var(--pine);
   border-radius: inherit;
-  transition: width 0.3s ease;
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
 .form-actions {

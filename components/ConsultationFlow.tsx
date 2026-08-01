@@ -222,7 +222,7 @@ export function ConsultationFlow() {
           <span>{stepTitles[step]}</span>
         </div>
         <div className="steps-progress__bar" role="progressbar" aria-valuemin={1} aria-valuemax={6} aria-valuenow={step + 1} aria-label="Form progress">
-          <div className="steps-progress__fill" style={{ width: `${progress}%` }} />
+          <div className="steps-progress__fill" style={{ transform: `scaleX(${progress / 100})` }} />
         </div>
       </div>
 
