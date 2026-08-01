@@ -21,7 +21,7 @@ const newsreader = Newsreader({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "Medism — World-class care, coordinated around you",
+    default: "Medism — Expert dental care, coordinated around you",
     template: "%s — Medism",
   },
   description: site.description,

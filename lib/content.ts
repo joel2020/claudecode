@@ -94,6 +94,7 @@ export const nav = [
   { label: "How It Works", href: "/how-it-works" },
   { label: "Dentists & Clinics", href: "/hospitals" }, // route renames to /dentists in the template stage
   { label: "Travel Support", href: "/international-patients" },
+  { label: "Patient Stories", href: "/#patient-story" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
@@ -1069,19 +1070,3 @@ export const finalCta = {
 
 export const emergencyDisclaimer =
   "Medism is a care-coordination service, not an emergency service and not a dental provider. If you have severe pain, uncontrolled bleeding, facial swelling, or an injury, seek immediate care from a local dentist, doctor, or emergency service.";
-
-/* ------------------------------------------------------------------ */
-/* Deprecated — pending removal in the IA restructure                  */
-/*                                                                     */
-/* The professional-programs page belongs to the abandoned general-    */
-/* medical brief and is removed from navigation. The export remains    */
-/* only so the legacy page compiles until it is deleted.               */
-/* ------------------------------------------------------------------ */
-
-/** @deprecated Legacy page support only; removed with the IA restructure. */
-export const professionalPrograms = [
-  {
-    term: "Clinic & professional partnerships",
-    detail: "Referral pathways and coordination agreements for dental clinics serving international patients.",
-  },
-];

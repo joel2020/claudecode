@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/hospitals",
     "/international-patients",
     "/about",
-    "/professional-programs",
     "/contact",
     "/consultation",
     "/privacy",

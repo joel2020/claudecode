@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav } from "@/lib/content";
+import { ctas, nav } from "@/lib/content";
 import { Wordmark } from "./Wordmark";
 
 export function SiteHeader() {
@@ -53,8 +53,8 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <Link href="/consultation" className="btn btn--primary">
-            Request a Care Consultation
+          <Link href={ctas.primary.href} className="btn btn--primary">
+            {ctas.primary.label}
           </Link>
         </nav>
         <button
@@ -85,11 +85,11 @@ export function SiteHeader() {
             </Link>
           ))}
           <div className="mobile-menu__cta">
-            <Link href="/consultation" className="btn btn--primary">
-              Request a Care Consultation
+            <Link href={ctas.primary.href} className="btn btn--primary">
+              {ctas.primary.label}
             </Link>
-            <Link href="/consultation?intent=reports" className="btn btn--secondary">
-              Send Your Medical Reports
+            <Link href={ctas.secondary.href} className="btn btn--secondary">
+              {ctas.secondary.label}
             </Link>
           </div>
         </nav>
