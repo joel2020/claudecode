@@ -60,8 +60,8 @@ export default async function HospitalPage({ params }: { params: Promise<{ slug:
             <dd>Shown only with documentation from the issuing body, with dates.</dd>
           </div>
           <div>
-            <dt>Clinical strengths</dt>
-            <dd>{h.strengths.join(". ")}</dd>
+            <dt>Treatment areas</dt>
+            <dd>{h.treatmentAreas.join(". ")}</dd>
           </div>
           <div>
             <dt>Specialist profiles</dt>

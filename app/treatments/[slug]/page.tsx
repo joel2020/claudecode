@@ -53,10 +53,10 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
           <div style={{ display: "grid", gap: "2.5rem" }}>
             <section aria-labelledby="conditions-h">
               <h2 id="conditions-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                Conditions this program addresses
+                Who this may be relevant for
               </h2>
               <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.conditions.map((c) => (
+                {t.whoFor.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
               </ul>
@@ -64,17 +64,21 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
 
             <section aria-labelledby="specialties-h">
               <h2 id="specialties-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                Relevant specialties
+                What it generally involves
               </h2>
-              <p className="muted">{t.specialties.join(" · ")}</p>
+              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
+                {t.involves.map((c) => (
+                  <li key={c}>{c}</li>
+                ))}
+              </ul>
             </section>
 
             <section aria-labelledby="expect-h">
               <h2 id="expect-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                What you can expect
+                What Medism coordinates
               </h2>
               <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.expect.map((c) => (
+                {t.coordination.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
               </ul>
@@ -107,7 +111,7 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
                 you exactly what to obtain.
               </p>
               <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.caseReview.map((c) => (
+                {t.infoNeeded.map((c) => (
                   <li key={c}>{c}</li>
                 ))}
               </ul>

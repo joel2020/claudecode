@@ -41,8 +41,8 @@ export default function HospitalsPage() {
                 <p className="muted" style={{ fontSize: "0.95rem" }}>{h.city}</p>
                 <dl style={{ margin: 0, display: "grid", gap: "0.75rem", fontSize: "0.95rem" }}>
                   <div>
-                    <dt style={{ fontWeight: 650 }}>Clinical strengths</dt>
-                    <dd style={{ margin: 0, color: "var(--ink-soft)" }}>{h.strengths.join(". ")}</dd>
+                    <dt style={{ fontWeight: 650 }}>Treatment areas</dt>
+                    <dd style={{ margin: 0, color: "var(--ink-soft)" }}>{h.treatmentAreas.join(". ")}</dd>
                   </div>
                   <div>
                     <dt style={{ fontWeight: 650 }}>Languages</dt>
