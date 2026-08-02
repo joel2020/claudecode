@@ -290,7 +290,7 @@ export default function HomePage() {
               confirmed. Medism never fabricates credentials and never implies a partnership that has not
               been agreed.
             </div>
-            <Link href="/hospitals" className="btn btn--secondary">
+            <Link href="/clinics" className="btn btn--secondary">
               See how profiles will work <ArrowRight />
             </Link>
           </Reveal>

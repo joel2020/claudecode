@@ -2,32 +2,48 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
 import { CtaSection } from "@/components/CtaSection";
-import { treatments } from "@/lib/content";
+import { Photo } from "@/components/Photo";
+import { Reveal } from "@/components/Reveal";
+import { treatmentsFor } from "@/lib/content";
 
 export const metadata: Metadata = {
-  title: "Treatments & clinical programs",
+  title: "Dental treatments",
   description:
-    "The clinical programs Medism coordinates for international patients — from cardiac surgery and oncology to orthopedics, IVF, and rehabilitation. Treatment decisions always remain with licensed doctors.",
+    "The dental treatments Medism coordinates for international patients — implants, full-arch rehabilitation, crowns, veneers, orthodontics, and more. Suitability is always decided by the dentist who assesses you.",
 };
+
+const dental = treatmentsFor("dental");
 
 export default function TreatmentsPage() {
   return (
     <>
-      <section className="section--tight section">
+      <section className="section section--tight">
         <div className="container">
-          <div className="section-head" style={{ maxWidth: 820 }}>
-            <p className="eyebrow">Treatments &amp; clinical programs</p>
-            <h1 className="display t-hero" style={{ fontSize: "clamp(2.2rem, 1.4rem + 3.4vw, 3.6rem)" }}>
-              Care organized by what you are facing.
-            </h1>
-            <p className="lede">
-              Choose the specialty closest to your situation. Each program explains the conditions it covers,
-              what you can expect, and what a case review needs. Medism coordinates access and logistics;
-              diagnosis and treatment decisions belong to the doctors who review you.
-            </p>
+          <div className="split split--reverse" style={{ alignItems: "center", marginBottom: "clamp(48px, 7vw, 80px)" }}>
+            <Reveal className="section-head" style={{ marginBottom: 0 }}>
+              <p className="eyebrow">Dental treatments</p>
+              <h1 className="display t-hero" style={{ fontSize: "clamp(2.2rem, 1.4rem + 3.4vw, 3.6rem)" }}>
+                Every option explained, <em>before you decide</em>.
+              </h1>
+              <p className="lede">
+                Each treatment page explains who it may be relevant for, what it involves, the questions
+                worth asking, and what an initial review needs. Whether a treatment is right for you is
+                always decided by the dentist who assesses you — not by a website.
+              </p>
+            </Reveal>
+            <Reveal>
+              <Photo
+                src="/images/lab-craftsmanship.webp"
+                alt="A dental ceramist refining a single ceramic crown with a fine brush"
+                brief="Dental craftsmanship detail"
+                ratio="4 / 3"
+                arch
+              />
+            </Reveal>
           </div>
-          <ul className="treatment-index">
-            {treatments.map((t) => (
+
+          <Reveal as="ul" className="treatment-index" stagger={0.05}>
+            {dental.map((t) => (
               <li key={t.slug}>
                 <Link href={`/treatments/${t.slug}`}>
                   <h2 style={{ fontSize: "1.25rem", fontWeight: 600 }}>{t.name}</h2>
@@ -38,12 +54,13 @@ export default function TreatmentsPage() {
                 </Link>
               </li>
             ))}
-          </ul>
-          <p className="muted" style={{ marginTop: "2rem", maxWidth: "70ch", fontSize: "0.95rem" }}>
-            Medism does not publish treatment prices, timelines, success rates, or eligibility statements
-            unless they are supplied and verified by the treating hospital. If your condition is not listed,
-            send your case anyway — we will tell you honestly whether we can help.
-          </p>
+          </Reveal>
+
+          <div className="note-disclosure" style={{ marginTop: "2.5rem", maxWidth: 820 }}>
+            Medism does not publish treatment prices, visit counts, or outcome claims unless they are
+            supplied and verified by the treating clinic. If your concern is not listed, send your case
+            anyway — we will tell you honestly whether we can help.
+          </div>
         </div>
       </section>
       <CtaSection />

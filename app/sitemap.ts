@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/treatments",
     "/how-it-works",
-    "/hospitals",
+    "/clinics",
     "/international-patients",
     "/about",
     "/contact",

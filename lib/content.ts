@@ -92,7 +92,7 @@ export const activeSpecialties = specialties.filter((s) => s.status === "active"
 export const nav = [
   ...activeSpecialties.map((s) => ({ label: s.navLabel, href: s.href })),
   { label: "How It Works", href: "/how-it-works" },
-  { label: "Dentists & Clinics", href: "/hospitals" }, // route renames to /dentists in the template stage
+  { label: "Dentists & Clinics", href: "/clinics" },
   { label: "Travel Support", href: "/international-patients" },
   { label: "Patient Stories", href: "/#patient-story" },
   { label: "About", href: "/about" },
@@ -907,8 +907,6 @@ export const clinicProfiles: ClinicProfile[] = [
   },
 ];
 
-/** Compatibility alias — earlier pages import `hospitalProfiles`. */
-export const hospitalProfiles = clinicProfiles;
 
 /* ------------------------------------------------------------------ */
 /* Patient story — verified stories only                               */

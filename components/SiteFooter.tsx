@@ -34,7 +34,7 @@ export function SiteFooter() {
           <div className="site-footer__col">
             <h3>Patients</h3>
             <Link href="/how-it-works">How it works</Link>
-            <Link href="/hospitals">Dentists &amp; clinics</Link>
+            <Link href="/clinics">Dentists &amp; clinics</Link>
             <Link href="/international-patients">International travel support</Link>
             <Link href={ctas.primary.href}>{ctas.primary.label}</Link>
             <Link href={ctas.secondary.href}>{ctas.secondary.label}</Link>

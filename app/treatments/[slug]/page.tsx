@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "@/components/icons";
 import { CtaSection } from "@/components/CtaSection";
-import { journey, treatments } from "@/lib/content";
+import { Reveal } from "@/components/Reveal";
+import { ctas, treatments } from "@/lib/content";
 
 export function generateStaticParams() {
   return treatments.map((t) => ({ slug: t.slug }));
@@ -14,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const t = treatments.find((x) => x.slug === slug);
   if (!t) return {};
   return {
-    title: `${t.name} — international patient coordination`,
+    title: `${t.name} — coordinated dental care`,
     description: t.summary,
   };
 }
@@ -26,106 +27,167 @@ export default async function TreatmentPage({ params }: { params: Promise<{ slug
 
   return (
     <>
+      {/* Header */}
       <section className="section--tight section">
-        <div className="container" style={{ maxWidth: 880 }}>
+        <div className="container" style={{ maxWidth: 900 }}>
           <nav aria-label="Breadcrumb">
             <ol className="crumbs">
               <li>
-                <Link href="/treatments">Treatments</Link>
+                <Link href="/treatments">Dental treatments</Link>
               </li>
               <li aria-current="page">{t.name}</li>
             </ol>
           </nav>
-          <div className="section-head">
-            <p className="eyebrow">Clinical program</p>
+          <div className="section-head" style={{ marginBottom: 0 }}>
+            <p className="eyebrow">Dental treatment</p>
             <h1 className="display" style={{ fontSize: "clamp(2.2rem, 1.4rem + 3.4vw, 3.4rem)" }}>{t.name}</h1>
             <p className="lede">{t.summary}</p>
             <div className="contact-routes">
               <Link href={`/consultation?treatment=${t.slug}`} className="btn btn--primary">
-                Request a Care Consultation <ArrowRight />
+                {ctas.primary.label} <ArrowRight />
               </Link>
-              <Link href="/consultation?intent=reports" className="btn btn--secondary">
-                Send Your Medical Reports
+              <Link href={ctas.secondary.href} className="btn btn--secondary">
+                {ctas.secondary.label}
               </Link>
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gap: "2.5rem" }}>
-            <section aria-labelledby="conditions-h">
-              <h2 id="conditions-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                Who this may be relevant for
-              </h2>
-              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.whoFor.map((c) => (
-                  <li key={c}>{c}</li>
-                ))}
-              </ul>
-            </section>
-
-            <section aria-labelledby="specialties-h">
-              <h2 id="specialties-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                What it generally involves
-              </h2>
-              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.involves.map((c) => (
-                  <li key={c}>{c}</li>
-                ))}
-              </ul>
-            </section>
-
-            <section aria-labelledby="expect-h">
-              <h2 id="expect-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                What Medism coordinates
-              </h2>
-              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.coordination.map((c) => (
-                  <li key={c}>{c}</li>
-                ))}
-              </ul>
-            </section>
-
-            <section aria-labelledby="process-h">
-              <h2 id="process-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                How coordination works
-              </h2>
-              <ol style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {journey.map((s) => (
-                  <li key={s.title}>
-                    <strong style={{ color: "var(--ink)" }}>{s.title}.</strong> {s.aside}.
-                  </li>
-                ))}
-              </ol>
-              <p style={{ marginTop: "0.75rem" }}>
-                <Link href="/how-it-works" className="text-link">
-                  The full journey, step by step
-                </Link>
-              </p>
-            </section>
-
-            <section aria-labelledby="review-h" className="panel">
-              <h2 id="review-h" className="t-sub" style={{ marginBottom: "1rem" }}>
-                What a case review needs
-              </h2>
-              <p className="muted" style={{ marginBottom: "1rem" }}>
-                Send what you already have — an incomplete file is a normal starting point, and we will tell
-                you exactly what to obtain.
-              </p>
-              <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.5rem", color: "var(--ink-soft)" }}>
-                {t.infoNeeded.map((c) => (
-                  <li key={c}>{c}</li>
-                ))}
-              </ul>
-            </section>
-
-            <div className="note-disclosure">
-              This page describes coordination, not medical advice. Whether a treatment is appropriate for
-              you, its risks, and its likely results can only be assessed by licensed doctors who review your
-              case. Medism does not publish prices, timelines, or success rates unless supplied and verified
-              by the treating hospital.
             </div>
           </div>
         </div>
       </section>
+
+      {/* Who / involves */}
+      <section className="section section--paper" aria-labelledby="who-h">
+        <div className="container" style={{ maxWidth: 900, display: "grid", gap: "3rem" }}>
+          <Reveal>
+            <h2 id="who-h" className="t-sub" style={{ marginBottom: "1.2rem" }}>
+              Who this may be relevant for
+            </h2>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {t.whoFor.map((c) => (
+                <div className="def-item" key={c}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <p style={{ color: "var(--ink-soft)" }}>{c}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <Reveal>
+            <h2 className="t-sub" style={{ marginBottom: "1.2rem" }}>
+              What it generally involves
+            </h2>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {t.involves.map((c) => (
+                <div className="def-item" key={c}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <p style={{ color: "var(--ink-soft)" }}>{c}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Stages */}
+      <section className="section section--apricot" aria-labelledby="stages-h">
+        <div className="container">
+          <Reveal className="section-head">
+            <p className="eyebrow">Possible stages</p>
+            <h2 id="stages-h" className="display t-section" style={{ fontSize: "clamp(1.7rem, 1.2rem + 2vw, 2.5rem)" }}>
+              How treatment is commonly staged.
+            </h2>
+            <p className="lede" style={{ fontSize: "1.05rem" }}>
+              Actual staging is set by the treating dentist for your case.
+            </p>
+          </Reveal>
+          <Reveal as="ol" className="journey" stagger={0.05} style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {t.stages.map((s, i) => (
+              <li className="journey__step" key={s}>
+                <span className="journey__num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <p style={{ color: "var(--ink)" }}>{s}</p>
+              </li>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Questions to ask — the transparency differentiator */}
+      <section className="section" aria-labelledby="questions-h">
+        <div className="container" style={{ maxWidth: 980 }}>
+          <Reveal className="panel" style={{ display: "grid", gap: "1.6rem" }}>
+            <p className="eyebrow">Before you decide</p>
+            <h2 id="questions-h" className="display" style={{ fontSize: "clamp(1.6rem, 1.2rem + 1.6vw, 2.3rem)" }}>
+              Questions worth asking <em>any</em> clinic.
+            </h2>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {t.questionsToAsk.map((q) => (
+                <div className="def-item" key={q}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <p style={{ color: "var(--ink-soft)" }}>{q}</p>
+                </div>
+              ))}
+            </div>
+            <div className="note-disclosure">
+              A good clinic answers these willingly. If a proposal you receive leaves them open, ask — and
+              if you want a second view, we help you compare.
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Travel & recovery + review needs */}
+      <section className="section section--mint" aria-labelledby="travel-h">
+        <div className="container" style={{ maxWidth: 980, display: "grid", gap: "3rem" }}>
+          <Reveal>
+            <h2 id="travel-h" className="t-sub" style={{ marginBottom: "1.2rem" }}>
+              Travel and recovery considerations
+            </h2>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {t.travelRecovery.map((c) => (
+                <div className="def-item" key={c}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <p style={{ color: "var(--ink-soft)" }}>{c}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <Reveal className="card" style={{ display: "grid", gap: "1rem" }}>
+            <h2 className="t-sub">What an initial review needs</h2>
+            <p className="muted">
+              Send what you already have — an incomplete file is a normal starting point, and we will tell
+              you exactly what to obtain.
+            </p>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {t.infoNeeded.map((c) => (
+                <div className="def-item" key={c}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <p style={{ color: "var(--ink-soft)" }}>{c}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <Reveal>
+            <h2 className="t-sub" style={{ marginBottom: "1.2rem" }}>
+              What Medism coordinates
+            </h2>
+            <div style={{ display: "grid", gap: "12px" }}>
+              {t.coordination.map((c) => (
+                <div className="def-item" key={c}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <p style={{ color: "var(--ink-soft)" }}>{c}</p>
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <div className="note-disclosure">
+            This page describes coordination, not dental advice. Whether this treatment is appropriate for
+            you, its risks, and its realistic results can only be assessed by the licensed dentist who
+            reviews your case. Medism does not publish prices, visit counts, or outcome claims unless
+            supplied and verified by the treating clinic.
+          </div>
+        </div>
+      </section>
+
       <CtaSection />
     </>
   );
