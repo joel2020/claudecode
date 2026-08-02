@@ -55,6 +55,9 @@ responsive derivatives to be produced in Stage 3)
 | clinic-environment.png | 7. Calm clinic interior with arches | 6fe28626-8a82-475f-b0f2-f116fe305c93 | 107730 |
 | aftercare-followup.png | 8. Remote follow-up at home | d5c2d666-0a57-43df-8739-9f7fc1cc04a7 | 955119 |
 | story-portrait-placeholder.png | 9. Verified-story placeholder portrait | 4b2edffb-0453-4103-b94e-69a463aaeaf9 | 212140 |
+| smile-woman-laughing.png | 10. Backlit joyful portrait (reference-mood addition, post-Stage 6) | a840638c-beb1-4a25-8fc0-904f29d80385 | 676895 |
+| smile-woman-joy.png | 11. Head-back laughing portrait (alternate) | c5b9c6e1-9615-4506-81e7-2049466f6490 | — |
+| smile-man-serene.png | 12. Serene backlit man portrait (Dovena-mood) | 9f5bfe64-7435-473e-b11e-53424d057db2 | 84002 |
 
 ### Rejection log
 

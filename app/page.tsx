@@ -378,8 +378,8 @@ export default function HomePage() {
           <Reveal>
             <Parallax amount={4}>
               <Photo
-                src="/images/story-portrait.webp"
-                alt="Portrait placeholder: a man smiling naturally by a sunlit window"
+                src="/images/smile-woman-laughing.webp"
+                alt="Portrait placeholder: a woman laughing softly in warm golden window light"
                 brief="Verified patient story portrait"
                 ratio="4 / 5"
                 arch

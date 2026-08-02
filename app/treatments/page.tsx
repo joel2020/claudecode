@@ -33,9 +33,9 @@ export default function TreatmentsPage() {
             </Reveal>
             <Reveal>
               <Photo
-                src="/images/lab-craftsmanship.webp"
-                alt="A dental ceramist refining a single ceramic crown with a fine brush"
-                brief="Dental craftsmanship detail"
+                src="/images/smile-man-serene.webp"
+                alt="A man smiling serenely with his eyes closed in warm afternoon light"
+                brief="Confident, relaxed outcome mood"
                 ratio="4 / 3"
                 arch
               />
