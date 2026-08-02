@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
 import { CtaSection } from "@/components/CtaSection";
-import { RouteRail } from "@/components/RouteRail";
 import { Reveal } from "@/components/Reveal";
 import { journey } from "@/lib/content";
 
@@ -28,23 +27,18 @@ export default function HowItWorksPage() {
             </p>
           </div>
 
-          <div className="journey">
-            <ol className="journey__list">
-              <RouteRail />
-              {journey.map((step, i) => (
-                <li className="journey__step" key={step.title}>
-                  <span className="journey__node" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <Reveal className="journey__body">
-                    <h2 style={{ fontSize: "1.35rem" }}>{step.title}</h2>
-                    <p className="muted">{step.body}</p>
-                    <p className="journey__aside">{step.aside}</p>
-                  </Reveal>
-                </li>
-              ))}
-            </ol>
-          </div>
+          <Reveal as="ol" className="journey" stagger={0.05} style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {journey.map((step, i) => (
+              <li className="journey__step" key={step.title}>
+                <span className="journey__num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <h2 style={{ fontSize: "1.12rem" }}>{step.title}</h2>
+                <p>{step.body}</p>
+                <p className="journey__aside">{step.aside}</p>
+              </li>
+            ))}
+          </Reveal>
 
           <div className="panel" style={{ marginTop: "3rem", display: "grid", gap: "1rem" }}>
             <h2 className="t-sub">Where the boundaries are</h2>

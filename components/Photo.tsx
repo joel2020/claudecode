@@ -3,12 +3,12 @@ import Image from "next/image";
 /**
  * Art-directed image slot.
  *
- * Medism has not yet supplied verified production photography. Until it does,
- * each slot renders a calm, on-brand placeholder that documents the required
- * shot (subject, mood, framing) so the photography brief lives in the design
- * itself and can be replaced 1:1 later.
+ * Pass `src` for a rights-confirmed image. Without `src`, the slot renders a
+ * bright Morning Arch placeholder that documents the required shot (subject,
+ * mood, framing) so the photography brief lives in the design itself and can
+ * be replaced 1:1 later.
  *
- * Pass `src` to render a real, rights-confirmed image instead.
+ * `arch` applies the signature arch mask (rounded crown).
  */
 export function Photo({
   brief,
@@ -18,6 +18,8 @@ export function Photo({
   alt,
   priority = false,
   showBrief = true,
+  arch = false,
+  sizes = "(max-width: 960px) 100vw, 50vw",
 }: {
   brief: string;
   ratio?: string;
@@ -26,16 +28,20 @@ export function Photo({
   alt?: string;
   priority?: boolean;
   showBrief?: boolean;
+  arch?: boolean;
+  sizes?: string;
 }) {
+  const className = `photo${variant === "deep" ? " photo--deep" : ""}${arch ? " arch" : ""}`;
+
   if (src) {
     return (
-      <figure className="photo" style={{ aspectRatio: ratio, margin: 0 }}>
+      <figure className={className} style={{ aspectRatio: ratio, margin: 0 }}>
         <Image
           src={src}
           alt={alt ?? brief}
           fill
           priority={priority}
-          sizes="(max-width: 960px) 100vw, 50vw"
+          sizes={sizes}
           style={{ objectFit: "cover" }}
         />
       </figure>
@@ -44,22 +50,31 @@ export function Photo({
 
   return (
     <figure
-      className={`photo${variant === "deep" ? " photo--deep" : ""}`}
+      className={className}
       style={{ aspectRatio: ratio, margin: 0 }}
       role="img"
       aria-label={`Photography placeholder: ${brief}`}
     >
-      <svg className="photo__art" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <svg
+        className="photo__art"
+        viewBox="0 0 400 300"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        {/* A quiet arch and rising sun — the shot is still to be taken. */}
         <path
-          d="M-20 240 C 80 200, 120 120, 210 130 S 360 80, 430 40"
+          d="M140 300V190c0-33 27-60 60-60s60 27 60 60v110"
           fill="none"
-          stroke={variant === "deep" ? "rgba(143,179,171,0.45)" : "rgba(31,91,78,0.28)"}
-          strokeWidth="1.5"
-          strokeDasharray="1 7"
-          strokeLinecap="round"
+          stroke={variant === "deep" ? "rgba(194,65,12,0.35)" : "rgba(31,111,84,0.35)"}
+          strokeWidth="2"
         />
-        <circle cx="210" cy="130" r="4" fill={variant === "deep" ? "#8fb3ab" : "#1f5b4e"} opacity="0.5" />
-        <circle cx="330" cy="92" r="3" fill="#c8614d" opacity="0.7" />
+        <circle
+          cx="200"
+          cy="205"
+          r="17"
+          fill={variant === "deep" ? "#c2410c" : "#1f6f54"}
+          opacity="0.45"
+        />
       </svg>
       {showBrief && (
         <figcaption className="photo__brief">

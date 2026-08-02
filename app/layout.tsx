@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
-import { Figtree, Newsreader } from "next/font/google";
+import { Fraunces, Hanken_Grotesk } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { site } from "@/lib/content";
 import "./globals.css";
 
-const figtree = Figtree({
+const hanken = Hanken_Grotesk({
   subsets: ["latin"],
-  variable: "--font-figtree",
+  variable: "--font-hanken",
   display: "swap",
 });
 
-const newsreader = Newsreader({
+const fraunces = Fraunces({
   subsets: ["latin"],
-  variable: "--font-newsreader",
+  variable: "--font-fraunces",
   style: ["normal", "italic"],
+  axes: ["opsz", "SOFT", "WONK"],
   display: "swap",
 });
 
@@ -44,7 +45,7 @@ const orgJsonLd = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${figtree.variable} ${newsreader.variable}`}>
+    <html lang="en" className={`${hanken.variable} ${fraunces.variable}`}>
       <body>
         <script
           type="application/ld+json"

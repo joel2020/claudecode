@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "@/components/icons";
 import { Photo } from "@/components/Photo";
 import { Reveal } from "@/components/Reveal";
-import { RouteRail } from "@/components/RouteRail";
 import { Faq } from "@/components/Faq";
 import { CtaSection } from "@/components/CtaSection";
 import {
@@ -12,13 +12,11 @@ import {
   faqs,
   hero,
   journey,
-  patientStory,
   site,
   specialties,
   transparency,
   travelSupport,
   treatmentsFor,
-  whyMedism,
 } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -39,16 +37,24 @@ const faqJsonLd = {
 const dentalTreatments = treatmentsFor("dental");
 const inDevelopment = specialties.filter((s) => s.status === "in-development");
 
+/** Editorial allocation of the treatment taxonomy across mixed module sizes. */
+const featured = dentalTreatments.find((t) => t.slug === "dental-implants");
+const mediaCard = dentalTreatments.find((t) => t.slug === "full-arch-rehabilitation");
+const smallCards = dentalTreatments.filter(
+  (t) => !["dental-implants", "full-arch-rehabilitation"].includes(t.slug)
+);
+const remainingNames = smallCards.slice(4).map((t) => t.name);
+
 export default function HomePage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
-      {/* Hero */}
+      {/* 2 — Cinematic hero */}
       <section className="hero" aria-labelledby="hero-heading">
         <div className="container hero__grid">
           <Reveal className="hero__copy" stagger={0.08}>
-            <p className="eyebrow">Dental care coordination</p>
+            <p className="eyebrow">Dental travel, carefully coordinated</p>
             <h1 id="hero-heading" className="display t-hero">
               Expert dental care, <em>coordinated around you</em>.
             </h1>
@@ -67,154 +73,212 @@ export default function HomePage() {
               ))}
             </p>
           </Reveal>
-          <Reveal delay={0.15} className="hero__figure">
-            <Photo
-              src="/medism-care-coordination.webp"
-              alt="A care coordinator and a patient reviewing a treatment plan together in a calm, light room"
-              brief="A dentist or coordinator and a patient in calm conversation — genuine human interaction, not a close-up of teeth"
-              ratio="4 / 5"
-              priority
-            />
+          <Reveal delay={0.15}>
+            <figure className="hero__figure" style={{ margin: 0 }}>
+              <Image
+                src="/images/hero-consultation.webp"
+                alt="A patient and a Medism care coordinator talking together on a bench in a sunlit clinic lounge"
+                fill
+                priority
+                sizes="(max-width: 900px) 100vw, 42vw"
+              />
+            </figure>
           </Reveal>
         </div>
       </section>
 
-      {/* Trust layer — verified signals only */}
-      <section className="trust-band section--tight" aria-label="What every patient can rely on">
+      {/* 3 — Immediate service strip */}
+      <section className="section--paper section--tight" aria-label="How to start">
         <div className="container">
-          <div className="trust-band__grid">
-            <div className="trust-band__item">
-              <strong>A named coordinator</strong>
-              <span>One person who knows your case, first message to aftercare</span>
-            </div>
-            <div className="trust-band__item">
-              <strong>Carefully selected dentists</strong>
-              <span>Profiles published only with verified qualifications and registrations</span>
-            </div>
-            <div className="trust-band__item">
-              <strong>A written plan first</strong>
-              <span>Options, stages, and costs explained before you commit</span>
-            </div>
-            <div className="trust-band__item">
-              <strong>Companions included</strong>
-              <span>The person travelling with you is planned for from the start</span>
-            </div>
-          </div>
-          <p className="muted" style={{ fontSize: "0.88rem", padding: "0.9rem 0.25rem 0" }}>
-            Partner clinics, locations served, languages, and accreditations will be published here once
-            verified. Medism does not publish unconfirmed claims.
-          </p>
+          <Reveal className="svc-strip" stagger={0.06}>
+            <Link href={ctas.primary.href} className="svc-item">
+              <span className="icon-chip" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.6 8.6 0 0 1-3.3-.7L3 21l1.8-5.7a8.4 8.4 0 1 1 16.2-3.8Z"/></svg>
+              </span>
+              <h3>Request an assessment</h3>
+              <p>Tell us what you need, in your own words.</p>
+            </Link>
+            <Link href={ctas.secondary.href} className="svc-item">
+              <span className="icon-chip icon-chip--apricot" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>
+              </span>
+              <h3>Share existing records</h3>
+              <p>Photographs, X-rays, or scans — whatever you already have.</p>
+            </Link>
+            <Link href={ctas.tertiary.href} className="svc-item">
+              <span className="icon-chip icon-chip--sun" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5a7 7 0 0 1 4 4M15 1.8a10.4 10.4 0 0 1 7.2 7.1M8.6 3.9a1.5 1.5 0 0 1 1.7.8l1.3 2.9a1.5 1.5 0 0 1-.4 1.7L9.7 10.6a12.5 12.5 0 0 0 3.7 3.7l1.3-1.5a1.5 1.5 0 0 1 1.7-.4l2.9 1.3a1.5 1.5 0 0 1 .8 1.7l-.6 2.6a1.6 1.6 0 0 1-1.6 1.2A16.5 16.5 0 0 1 2.8 6.1a1.6 1.6 0 0 1 1.2-1.6Z"/></svg>
+              </span>
+              <h3>Speak with a coordinator</h3>
+              <p>A real person explains what happens next.</p>
+            </Link>
+            <Link href="/how-it-works" className="svc-item">
+              <span className="icon-chip" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg>
+              </span>
+              <h3>Understand the process</h3>
+              <p>Every step explained before you commit to anything.</p>
+            </Link>
+          </Reveal>
         </div>
       </section>
 
-      {/* Dental treatments */}
-      <section className="section section--paper" aria-labelledby="treatments-heading" style={{ borderBlock: "1px solid var(--line)" }}>
+      {/* 4 — Emotional positioning */}
+      <section className="section section--mint" aria-labelledby="options-heading">
+        <div className="container split">
+          <Reveal>
+            <Photo
+              src="/images/coordinator-review.webp"
+              alt="A care coordinator and a patient looking through options together on a tablet"
+              brief="Patient and coordinator reviewing options together"
+              ratio="4 / 5"
+              arch
+            />
+          </Reveal>
+          <Reveal style={{ display: "grid", gap: "1.4rem", justifyItems: "start" }}>
+            <p className="eyebrow">Before anything else</p>
+            <h2 id="options-heading" className="display t-section">
+              Understand your options <em>before deciding</em>.
+            </h2>
+            <p className="lede">
+              Most people arrive with the same worries: Will it hurt? Is it safe? What will it really cost?
+              What if something goes wrong far from home? Medism exists to answer those questions honestly —
+              before you commit to anything.
+            </p>
+            <p className="muted" style={{ maxWidth: "56ch" }}>
+              No pressure, no countdown timers, no sales scripts. A clear picture of what is possible, what
+              it involves, what it costs — and enough time to decide at your own pace.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 5 — Dental treatments, editorial modules */}
+      <section className="section" aria-labelledby="treatments-heading">
         <div className="container">
           <Reveal className="section-head">
             <p className="eyebrow">Dental treatments</p>
             <h2 id="treatments-heading" className="display t-section">
-              Understand your options before deciding.
+              From a single crown to a complete new smile.
             </h2>
             <p className="lede">
               Every treatment page explains who it may be relevant for, what it involves, and what an initial
-              review needs. Whether a treatment is right for you is always decided by the dentist who assesses
-              you — not by a website.
+              review needs. Whether a treatment is right for you is always decided by the dentist who
+              assesses you — not by a website.
             </p>
           </Reveal>
-          <ul className="treatment-index">
-            {dentalTreatments.map((t) => (
-              <li key={t.slug}>
-                <Link href={`/treatments/${t.slug}`}>
-                  <h3>{t.name}</h3>
-                  <p>{t.short}</p>
-                  <span className="treatment-index__go" aria-hidden="true">
-                    <ArrowRight />
-                  </span>
-                </Link>
-              </li>
+          <Reveal className="tx-grid" stagger={0.06}>
+            {featured && (
+              <Link href={`/treatments/${featured.slug}`} className="tx-feature">
+                <h3>{featured.name}</h3>
+                <p className="muted" style={{ maxWidth: "52ch" }}>{featured.short}. {featured.summary.split(". ")[0]}.</p>
+                <span className="text-link">
+                  About {featured.name.toLowerCase()} <ArrowRight size={16} />
+                </span>
+              </Link>
+            )}
+            {mediaCard && (
+              <Link href={`/treatments/${mediaCard.slug}`} className="tx-media">
+                <Image
+                  src="/images/clinic-environment.webp"
+                  alt="A calm, bright clinic waiting area with arched doorways"
+                  fill
+                  sizes="(max-width: 620px) 100vw, 33vw"
+                />
+                <span className="tx-media__tag">{mediaCard.name}</span>
+              </Link>
+            )}
+            {smallCards.slice(0, 4).map((t) => (
+              <Link key={t.slug} href={`/treatments/${t.slug}`} className="tx-card">
+                <h3>{t.name}</h3>
+                <p>{t.short}</p>
+              </Link>
             ))}
-          </ul>
+            <Link href="/treatments" className="tx-more">
+              <h3>
+                {remainingNames.join(" · ")} — and the rest of the dental taxonomy, explained without
+                jargon.
+              </h3>
+              <span className="text-link" style={{ color: "var(--ink)" }}>
+                All dental treatments <ArrowRight size={16} />
+              </span>
+            </Link>
+          </Reveal>
           {inDevelopment.length > 0 && (
-            <p className="muted" style={{ fontSize: "0.88rem", marginTop: "1rem", padding: "0 0.5rem" }}>
+            <p className="muted" style={{ fontSize: "0.88rem", marginTop: "1.2rem" }}>
               Additional specialties in development.
             </p>
           )}
         </div>
       </section>
 
-      {/* Patient journey */}
-      <section className="section" aria-labelledby="journey-heading">
+      {/* 6 — Patient journey */}
+      <section className="section section--apricot" aria-labelledby="journey-heading">
         <div className="container">
           <Reveal className="section-head">
-            <p className="eyebrow">Your journey with Medism</p>
+            <p className="eyebrow">The patient journey</p>
             <h2 id="journey-heading" className="display t-section">
-              One clear route, from first question to aftercare.
+              One clear path, from first message to follow-up.
             </h2>
             <p className="lede">
-              Every case follows the same path. You always know where you are, what happens next, and who is
-              responsible for it.
+              Every case follows the same route. You always know where you are, what happens next, and who
+              is responsible for it.
             </p>
           </Reveal>
-          <div className="journey">
-            <ol className="journey__list">
-              <RouteRail />
-              {journey.map((step, i) => (
-                <li className="journey__step" key={step.title}>
-                  <span className="journey__node" aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <Reveal className="journey__body">
-                    <h3>{step.title}</h3>
-                    <p className="muted">{step.body}</p>
-                    <p className="journey__aside">{step.aside}</p>
-                  </Reveal>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Medism */}
-      <section className="section section--panel" aria-labelledby="why-heading">
-        <div className="container split">
-          <div className="split__sticky">
-            <p className="eyebrow">Why Medism</p>
-            <h2 id="why-heading" className="display t-section">
-              Guidance you can <em>question</em>, plans you can trust.
-            </h2>
-            <p className="lede">
-              We measure our work by how confident you feel at each step — not by how quickly you commit.
-            </p>
-            <Photo
-              brief="Documentary style: a coordinator on the phone beside a clinic window, unposed, warm natural light"
-              ratio="4 / 3"
-            />
-          </div>
-          <dl className="defs">
-            {whyMedism.map((item) => (
-              <div key={item.term}>
-                <dt>{item.term}</dt>
-                <dd>{item.detail}</dd>
-              </div>
+          <Reveal as="ol" className="journey" stagger={0.05} style={{ listStyle: "none", margin: 0, padding: 0 }}>
+            {journey.map((step, i) => (
+              <li className="journey__step" key={step.title}>
+                <span className="journey__num" aria-hidden="true">
+                  {i + 1}
+                </span>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+                <p className="journey__aside">{step.aside}</p>
+              </li>
             ))}
-          </dl>
+          </Reveal>
         </div>
       </section>
 
-      {/* Dentists & clinics */}
-      <section className="section" aria-labelledby="network-heading">
-        <div className="container split--reverse split">
-          <div style={{ display: "grid", gap: "1.25rem", alignContent: "start" }}>
+      {/* 7 — Treatment-planning transparency (signature section) */}
+      <section className="section" aria-labelledby="transparency-heading">
+        <div className="container">
+          <Reveal className="panel" style={{ display: "grid", gap: "2.2rem" }}>
+            <div className="section-head" style={{ marginBottom: 0 }}>
+              <p className="eyebrow">Treatment-plan transparency</p>
+              <h2 id="transparency-heading" className="display t-section">
+                A responsible proposal leaves <em>nothing vague</em>.
+              </h2>
+              <p className="lede">{transparency.intro}</p>
+            </div>
+            <div className="defs">
+              {transparency.items.map((item) => (
+                <div className="def-item" key={item.term}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <div>
+                    <strong>{item.term}</strong>
+                    <p>{item.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="note-disclosure">{transparency.note}</div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* 8 — Dentists & clinics */}
+      <section className="section section--paper" aria-labelledby="network-heading">
+        <div className="container split split--reverse">
+          <Reveal style={{ display: "grid", gap: "1.4rem", justifyItems: "start" }}>
             <p className="eyebrow">Dentists &amp; clinics</p>
             <h2 id="network-heading" className="display t-section">
-              Professionals published only after verification.
+              Profiles published only after verification.
             </h2>
-            <p className="lede" style={{ maxWidth: "58ch" }}>
-              Every dentist and clinic shown on this site will carry documented credentials — qualifications,
-              professional registrations, languages, experience, treatment areas, and accreditations —
-              confirmed directly and dated. Until that verification is complete, we show the profile
-              structure rather than unconfirmed names.
+            <p className="lede">
+              Every dentist and clinic profile lists only approved, verifiable information: qualifications,
+              professional registration, languages, experience, clinic and location, treatment areas, and
+              accreditation.
             </p>
             <ul style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.4rem", color: "var(--ink-soft)" }}>
               {dentistProfiles.map((p) => (
@@ -226,98 +290,103 @@ export default function HomePage() {
               confirmed. Medism never fabricates credentials and never implies a partnership that has not
               been agreed.
             </div>
-            <div>
-              <Link href="/hospitals" className="btn btn--secondary">
-                See how profiles will work <ArrowRight />
-              </Link>
-            </div>
-          </div>
-          <Photo
-            brief="A dentist explaining a treatment plan across a desk — eye contact, unposed, modern consulting room, no instruments in frame"
-            ratio="3 / 2"
-          />
-        </div>
-      </section>
-
-      {/* Treatment planning & transparency */}
-      <section className="section section--paper" aria-labelledby="transparency-heading" style={{ borderBlock: "1px solid var(--line)" }}>
-        <div className="container">
-          <Reveal className="section-head">
-            <p className="eyebrow">Treatment planning &amp; transparency</p>
-            <h2 id="transparency-heading" className="display t-section">
-              What a responsible proposal looks like.
-            </h2>
-            <p className="lede">{transparency.intro}</p>
+            <Link href="/hospitals" className="btn btn--secondary">
+              See how profiles will work <ArrowRight />
+            </Link>
           </Reveal>
-          <dl className="defs" style={{ columnGap: "3rem" }}>
-            {transparency.items.map((item) => (
-              <div key={item.term}>
-                <dt>{item.term}</dt>
-                <dd>{item.detail}</dd>
-              </div>
-            ))}
-          </dl>
-          <p className="muted" style={{ marginTop: "1.5rem", maxWidth: "62ch" }}>{transparency.note}</p>
+          <Reveal>
+            <Photo
+              src="/images/dentist-explains.webp"
+              alt="A dentist explaining a treatment plan across a table, in warm conversation with a patient"
+              brief="A dentist explaining a plan across a desk"
+              ratio="4 / 5"
+              arch
+            />
+          </Reveal>
         </div>
       </section>
 
-      {/* International travel support */}
-      <section className="section" aria-labelledby="support-heading">
+      {/* 9 — International patient support */}
+      <section className="section section--mint" aria-labelledby="support-heading">
         <div className="container">
           <Reveal className="section-head">
             <p className="eyebrow">International travel support</p>
             <h2 id="support-heading" className="display t-section">
-              Who will help me before, during, and after the trip?
+              Who helps me before, during, and after the trip?
             </h2>
             <p className="lede">
               The honest question behind every treatment journey abroad. Here is the practical answer — the
               support that makes an unfamiliar city feel manageable.
             </p>
           </Reveal>
-          <dl className="defs" style={{ columnGap: "3rem" }}>
-            {travelSupport.map((item) => (
-              <div key={item.term}>
-                <dt>{item.term}</dt>
-                <dd>{item.detail}</dd>
-              </div>
-            ))}
-          </dl>
-          <div style={{ marginTop: "2rem" }}>
+          <div className="split" style={{ alignItems: "start" }}>
+            <Reveal style={{ display: "grid", gap: "22px" }}>
+              <Photo
+                src="/images/arrival-support.webp"
+                alt="A care coordinator warmly greeting an arriving couple beside a bright glass wall"
+                brief="Arrival greeting"
+                ratio="3 / 2"
+              />
+              <Photo
+                src="/images/travel-planning.webp"
+                alt="A sunlit table with an open blank notebook, a cup of tea, and a sprig of eucalyptus"
+                brief="Travel planning still life"
+                ratio="3 / 2"
+              />
+            </Reveal>
+            <Reveal className="defs" style={{ gridTemplateColumns: "1fr", gap: "16px" }} stagger={0.04}>
+              {travelSupport.map((item) => (
+                <div className="def-item" key={item.term}>
+                  <span className="def-item__dot" aria-hidden="true" />
+                  <div>
+                    <strong>{item.term}</strong>
+                    <p>{item.detail}</p>
+                  </div>
+                </div>
+              ))}
+            </Reveal>
+          </div>
+          <div style={{ marginTop: "2.2rem" }}>
             <Link href="/international-patients" className="text-link">
-              Everything we arrange for international patients
+              Everything we arrange for international patients <ArrowRight size={16} />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Patient story — verified stories only */}
-      <section id="patient-story" className="section section--dark on-dark" aria-labelledby="story-heading">
-        <div className="container story">
-          <Photo
-            variant="deep"
-            brief={patientStory.artDirection}
-            ratio="4 / 5"
-          />
-          <blockquote>
-            <p id="story-heading">
-              This space is reserved for a real patient&rsquo;s story — told in their own words, with their
-              written permission.
-            </p>
-            <footer style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>
-              <p style={{ fontSize: "1rem" }}>
-                Medism publishes only verified experiences. No invented names, no invented outcomes, no
-                dramatic transformations. When a patient chooses to share their journey, it will appear here —
-                how they decided, how the treatment was coordinated, and what they would tell someone in
-                their position today.
+      {/* 10 — Patient story (verified stories only) */}
+      <section id="patient-story" className="section" aria-labelledby="story-heading">
+        <div className="container split">
+          <Reveal>
+            <Photo
+              src="/images/story-portrait.webp"
+              alt="Portrait placeholder: a man smiling naturally by a sunlit window"
+              brief="Verified patient story portrait"
+              ratio="4 / 5"
+              arch
+            />
+          </Reveal>
+          <Reveal className="story">
+            <p className="eyebrow">A patient&rsquo;s story</p>
+            <blockquote>
+              <p id="story-heading">
+                This space is reserved for a real patient&rsquo;s story — told in their own words, with
+                their written permission.
               </p>
-              <span className="tag-placeholder">Awaiting verified patient story</span>
-            </footer>
-          </blockquote>
+            </blockquote>
+            <p className="muted" style={{ maxWidth: "54ch" }}>
+              Medism publishes only verified experiences. No invented names, no invented outcomes, no
+              dramatic transformations. When a patient chooses to share their journey, it will appear here —
+              how they decided, how the treatment was coordinated, and what they would tell someone in their
+              position today.
+            </p>
+            <span className="tag-placeholder">Awaiting verified patient story</span>
+          </Reveal>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="section section--paper" aria-labelledby="faq-heading" style={{ borderTop: "1px solid var(--line)" }}>
+      {/* 11 — FAQ */}
+      <section className="section section--sun" aria-labelledby="faq-heading">
         <div className="container" style={{ maxWidth: 880 }}>
           <Reveal className="section-head">
             <p className="eyebrow">Questions, answered plainly</p>
@@ -329,7 +398,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Final conversion */}
+      {/* 12 — Final CTA */}
       <CtaSection />
     </>
   );
