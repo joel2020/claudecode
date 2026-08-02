@@ -450,6 +450,26 @@ a {
   color: var(--papaya);
 }
 
+/* Worry pills — plain-language questions, answered before anything is sold. */
+.worry-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.worry-list li {
+  background: var(--paper);
+  border-radius: var(--radius-ctrl);
+  padding: 10px 18px;
+  font-family: var(--font-serif);
+  font-weight: 470;
+  font-size: 1.02rem;
+  color: var(--ink);
+}
+
 .icon-chip--sun {
   background: var(--sun);
   color: var(--ink);

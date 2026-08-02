@@ -20,16 +20,16 @@ export default function TermsPage() {
         <div style={{ display: "grid", gap: "1.25rem", color: "var(--ink-soft)" }}>
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>What Medism is</h2>
           <p>
-            Medism provides healthcare coordination services: helping patients reach appropriate specialists
-            and hospitals, and organizing the practical journey around treatment. Medism is not a healthcare
-            provider, does not employ the treating doctors, and does not provide medical advice, diagnosis,
-            or treatment.
+            Medism provides dental care-coordination services: helping patients reach appropriate dentists
+            and clinics, and organizing the practical journey around treatment. Medism is not a dental or
+            healthcare provider, does not employ the treating dentists, and does not provide dental or
+            medical advice, diagnosis, or treatment.
           </p>
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>Clinical responsibility</h2>
           <p>
             All clinical decisions — including whether a treatment is appropriate, its risks, and its
-            expected results — are made by the licensed physicians and hospitals who review and treat you.
-            Information on this site is educational and is not a substitute for professional medical advice.
+            expected results — are made by the licensed dentists who review and treat you. Information on
+            this site is educational and is not a substitute for a professional dental assessment.
           </p>
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>No guarantees</h2>
           <p>

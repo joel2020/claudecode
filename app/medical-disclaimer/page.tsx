@@ -15,18 +15,18 @@ export default function MedicalDisclaimerPage() {
         </div>
         <div style={{ display: "grid", gap: "1.25rem", color: "var(--ink-soft)" }}>
           <p>
-            The content of this website is provided for general information about healthcare coordination and
-            medical travel. It is not medical advice, and it is not a substitute for consultation, diagnosis,
-            or treatment by a qualified doctor.
+            The content of this website is provided for general information about dental care coordination and
+            dental travel. It is not dental or medical advice, and it is not a substitute for examination,
+            diagnosis, or treatment by a qualified dentist.
           </p>
           <p>
-            Medism does not practice medicine. Descriptions of treatments and specialties on this site
-            explain what Medism can coordinate; they do not state that any treatment is suitable, available,
-            or likely to succeed for any individual. Suitability, risks, and expected results can only be
-            assessed by licensed physicians who review your case.
+            Medism does not practice dentistry or medicine. Descriptions of treatments on this site explain
+            what Medism can coordinate; they do not state that any treatment is suitable, available, or
+            likely to succeed for any individual. Suitability, risks, and expected results can only be
+            assessed by the licensed dentists who review your case.
           </p>
           <p>
-            Never delay seeking medical advice, disregard a doctor&rsquo;s guidance, or discontinue treatment
+            Never delay seeking medical advice, disregard a dentist&rsquo;s or doctor&rsquo;s guidance, or discontinue treatment
             because of something read on this website.
           </p>
           <p>

@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, WhatsAppIcon } from "@/components/icons";
-import { site } from "@/lib/content";
+import { ctas, site } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Contact Medism",
   description:
-    "Reach Medism about a care consultation, medical reports, or professional programs. Medism is a coordination service, not an emergency service.",
+    "Reach Medism about a dental consultation or your records. Medism is a coordination service, not an emergency service.",
 };
 
 export default function ContactPage() {
@@ -19,7 +19,7 @@ export default function ContactPage() {
             Tell us what you need.
           </h1>
           <p className="lede">
-            The fastest way to get help with a medical case is a care consultation request — it gives our
+            The fastest way to get help with a dental case is a consultation request — it gives our
             coordinators what they need to respond usefully on the first reply.
           </p>
         </div>
@@ -28,15 +28,15 @@ export default function ContactPage() {
           <div className="panel" style={{ display: "grid", gap: "1rem" }}>
             <h2 className="t-sub">Patients &amp; families</h2>
             <p className="muted">
-              Describe your situation in a few guided steps. Attaching reports is optional — send what you
-              have.
+              Describe your concern in a few guided steps. Attaching photographs or records is optional —
+              send what you have.
             </p>
             <div className="contact-routes">
-              <Link href="/consultation" className="btn btn--primary">
-                Request a Care Consultation <ArrowRight />
+              <Link href={ctas.primary.href} className="btn btn--primary">
+                {ctas.primary.label} <ArrowRight />
               </Link>
-              <Link href="/consultation?intent=reports" className="btn btn--secondary">
-                Send Your Medical Reports
+              <Link href={ctas.secondary.href} className="btn btn--secondary">
+                {ctas.secondary.label}
               </Link>
             </div>
           </div>
@@ -60,21 +60,18 @@ export default function ContactPage() {
           </div>
 
           <div className="card" style={{ display: "grid", gap: "0.75rem" }}>
-            <h2 style={{ fontSize: "1.2rem" }}>Doctors &amp; institutions</h2>
+            <h2 style={{ fontSize: "1.2rem" }}>Dentists &amp; clinics</h2>
             <p className="muted" style={{ fontSize: "0.97rem" }}>
-              For training, observerships, referrals, or partnership conversations, mention your organization
-              and program of interest in the consultation form&rsquo;s message field, or see{" "}
-              <Link href="/professional-programs" className="text-link">
-                professional programs
-              </Link>
-              .
+              If you are a dental professional or clinic interested in partnership, mention your clinic and
+              location in the consultation form&rsquo;s message field. Every partnership goes through the
+              same verification before any profile is published.
             </p>
           </div>
 
           <div className="note-disclosure">
-            <strong>Medism is not an emergency service.</strong> If you or someone near you needs urgent
-            medical help, contact your local emergency services immediately. Messages here are answered by
-            care coordinators, not by doctors on call.
+            <strong>Medism is not an emergency service.</strong> If you have severe pain, uncontrolled
+            bleeding, facial swelling, or an injury, seek immediate care from a local dentist, doctor, or
+            emergency service. Messages here are answered by care coordinators, not by dentists on call.
           </div>
         </div>
       </div>

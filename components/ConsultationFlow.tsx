@@ -3,7 +3,14 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { contactMethods, timeframes, treatments } from "@/lib/content";
+import {
+  consultationConfirmation,
+  consultationSteps,
+  contactMethods,
+  timeframes,
+  treatmentsFor,
+  uploadRequirements,
+} from "@/lib/content";
 
 /** Push conversion events to the analytics layer when one is present. */
 function track(event: string, data: Record<string, string | number> = {}) {
@@ -13,19 +20,22 @@ function track(event: string, data: Record<string, string | number> = {}) {
 }
 
 const MAX_FILES = 10;
-const MAX_SIZE_MB = 20;
-const ACCEPTED = [".pdf", ".jpg", ".jpeg", ".png", ".doc", ".docx"];
+const MAX_SIZE_MB = 25;
+const ACCEPTED = [".pdf", ".jpg", ".jpeg", ".png", ".heic", ".dcm"];
 
 type FormData = {
   country: string;
   language: string;
   treatment: string;
   forWhom: string;
-  situation: string;
+  situation: string; // the dental concern, in the patient's own words
+  history: string; // previous diagnosis, treatment, or quotations
+  symptoms: string; // current symptoms
+  urgency: string; // pain / swelling flag
+  timeframe: string;
   name: string;
   contactMethod: string;
   contactDetail: string;
-  timeframe: string;
   files: File[];
   consentPrivacy: boolean;
   consentEmergency: boolean;
@@ -37,27 +47,31 @@ const initial: FormData = {
   treatment: "",
   forWhom: "",
   situation: "",
+  history: "",
+  symptoms: "",
+  urgency: "",
+  timeframe: "",
   name: "",
   contactMethod: "",
   contactDetail: "",
-  timeframe: "",
   files: [],
   consentPrivacy: false,
   consentEmergency: false,
 };
 
-const stepTitles = [
-  "Where are you writing from?",
-  "What kind of care are you exploring?",
-  "Tell us about the situation",
-  "How should we reach you?",
-  "Attach medical reports (optional)",
-  "Review and send",
+/** Titles come from the content model — one step per consultationSteps entry. */
+const steps = consultationSteps;
+
+const URGENCY_OPTIONS = [
+  "No pain or swelling right now",
+  "Occasional discomfort",
+  "Ongoing pain",
+  "Pain or swelling that is getting worse",
 ];
 
 export function ConsultationFlow() {
   const params = useSearchParams();
-  const reportsIntent = params.get("intent") === "reports";
+  const recordsIntent = params.get("start") === "records" || params.get("intent") === "reports";
   const presetTreatment = params.get("treatment") ?? "";
 
   const [data, setData] = useState<FormData>({ ...initial, treatment: presetTreatment });
@@ -76,7 +90,10 @@ export function ConsultationFlow() {
   };
 
   const treatmentOptions = useMemo(
-    () => [...treatments.map((t) => ({ value: t.slug, label: t.name })), { value: "not-sure", label: "Not sure yet / something else" }],
+    () => [
+      ...treatmentsFor("dental").map((t) => ({ value: t.slug, label: t.name })),
+      { value: "not-sure", label: "Not sure yet / something else" },
+    ],
     []
   );
 
@@ -88,22 +105,23 @@ export function ConsultationFlow() {
     }
     if (current === 1) {
       if (!data.treatment) e.treatment = "Please choose the closest option — “not sure” is fine.";
-    }
-    if (current === 2) {
       if (!data.forWhom) e.forWhom = "Please tell us who the consultation is for.";
       if (data.situation.trim().length < 20)
-        e.situation = "A few sentences help our coordinators respond usefully — please add a little more detail.";
+        e.situation = "A few sentences help the reviewing dentist respond usefully — please add a little more detail.";
     }
+    // Step 2 (history) is optional by design.
     if (current === 3) {
-      if (!data.name.trim()) e.name = "Please tell us your name.";
-      if (!data.contactMethod) e.contactMethod = "Please choose how you would like to be contacted.";
-      if (!data.contactDetail.trim())
-        e.contactDetail = "Please add the address or number we should use.";
-      else if (data.contactMethod === "Email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.contactDetail.trim()))
-        e.contactDetail = "That email address does not look complete — please check it.";
+      if (!data.urgency) e.urgency = "Please choose the option closest to how things feel right now.";
       if (!data.timeframe) e.timeframe = "Please choose a rough timeframe.";
     }
-    if (current === 5) {
+    if (current === 4) {
+      if (!data.name.trim()) e.name = "Please tell us your name.";
+      if (!data.contactMethod) e.contactMethod = "Please choose how you would like to be contacted.";
+      if (!data.contactDetail.trim()) e.contactDetail = "Please add the address or number we should use.";
+      else if (data.contactMethod === "Email" && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.contactDetail.trim()))
+        e.contactDetail = "That email address does not look complete — please check it.";
+    }
+    if (current === 6) {
       if (!data.consentPrivacy) e.consentPrivacy = "Please confirm you have read how your information is used.";
       if (!data.consentEmergency) e.consentEmergency = "Please confirm you understand this is not an emergency service.";
     }
@@ -118,7 +136,7 @@ export function ConsultationFlow() {
 
   function onNext() {
     if (!validate(step)) return;
-    track("consultation_step_completed", { step: step + 1 });
+    track("consultation_step_completed", { step: step + 1, key: steps[step].key });
     go(step + 1);
   }
 
@@ -130,7 +148,7 @@ export function ConsultationFlow() {
     for (const f of incoming) {
       const ext = "." + (f.name.split(".").pop() ?? "").toLowerCase();
       if (!ACCEPTED.includes(ext)) {
-        error = `“${f.name}” is not a supported type. Accepted: PDF, JPG, PNG, DOC.`;
+        error = `“${f.name}” is not a supported type. Accepted: ${uploadRequirements.accepted}.`;
         continue;
       }
       if (f.size > MAX_SIZE_MB * 1024 * 1024) {
@@ -144,16 +162,16 @@ export function ConsultationFlow() {
       accepted.push(f);
     }
     set("files", accepted);
-    setErrors((prev) => (error ? { ...prev, files: error } : prev));
-    if (!error) setErrors((prev) => {
+    setErrors((prev) => {
       const next = { ...prev };
-      delete next.files;
+      if (error) next.files = error;
+      else delete next.files;
       return next;
     });
   }
 
   async function onSubmit() {
-    if (!validate(5)) return;
+    if (!validate(6)) return;
     setState("sending");
     try {
       const res = await fetch("/api/consultation", {
@@ -165,10 +183,13 @@ export function ConsultationFlow() {
           treatment: data.treatment,
           forWhom: data.forWhom,
           situation: data.situation,
+          history: data.history,
+          symptoms: data.symptoms,
+          urgency: data.urgency,
+          timeframe: data.timeframe,
           name: data.name,
           contactMethod: data.contactMethod,
           contactDetail: data.contactDetail,
-          timeframe: data.timeframe,
           fileCount: data.files.length,
           fileNames: data.files.map((f) => f.name),
         }),
@@ -184,59 +205,73 @@ export function ConsultationFlow() {
 
   if (state === "sent") {
     return (
-      <div className="status status--success" role="status" aria-live="polite">
-        <h2 className="t-sub">Your request has been received.</h2>
-        <p className="muted">Here is what happens next:</p>
-        <ol style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.4rem", color: "var(--ink-soft)" }}>
+      <div className="status status--success" role="status" aria-live="polite" style={{ display: "grid", gap: "1rem" }}>
+        <h2 className="t-sub">{consultationConfirmation.heading}</h2>
+        <p style={{ color: "var(--ink-soft)", fontWeight: 400 }}>{consultationConfirmation.body}</p>
+        <ol style={{ margin: 0, paddingLeft: "1.2rem", display: "grid", gap: "0.4rem", color: "var(--ink-soft)", fontWeight: 400 }}>
           <li>A Medism care coordinator reviews your case.</li>
           <li>
-            You receive a reply by {data.contactMethod ? data.contactMethod.toLowerCase() : "your chosen route"} with the
-            next appropriate step, or with questions a specialist needs answered.
+            You receive a reply by {data.contactMethod ? data.contactMethod.toLowerCase() : "your chosen route"} with
+            the next appropriate step, or with what is still needed for a useful review.
           </li>
           <li>Nothing proceeds without your say-so — this request creates no obligation.</li>
         </ol>
-        <p className="muted" style={{ fontSize: "0.92rem" }}>
-          If your situation changes urgently, contact your local emergency services — Medism is not an
-          emergency service.
+        <p style={{ fontSize: "0.92rem", color: "var(--ink-soft)", fontWeight: 400 }}>
+          {consultationConfirmation.fallback} If your situation becomes urgent, contact a local dentist,
+          doctor, or emergency service — Medism is not an emergency service.
         </p>
       </div>
     );
   }
 
-  const progress = ((step + 1) / stepTitles.length) * 100;
+  const progress = ((step + 1) / steps.length) * 100;
+  const urgent = data.urgency === URGENCY_OPTIONS[3];
 
   return (
     <form
       noValidate
       onSubmit={(e) => {
         e.preventDefault();
-        if (step < 5) onNext();
+        if (step < steps.length - 1) onNext();
         else onSubmit();
       }}
     >
       <div className="steps-progress">
         <div className="steps-progress__meta">
           <span>
-            Step {step + 1} of {stepTitles.length}
+            Step {step + 1} of {steps.length}
           </span>
-          <span>{stepTitles[step]}</span>
+          <span>{steps[step].title}</span>
         </div>
-        <div className="steps-progress__bar" role="progressbar" aria-valuemin={1} aria-valuemax={6} aria-valuenow={step + 1} aria-label="Form progress">
+        <div
+          className="steps-progress__bar"
+          role="progressbar"
+          aria-valuemin={1}
+          aria-valuemax={steps.length}
+          aria-valuenow={step + 1}
+          aria-label="Form progress"
+        >
           <div className="steps-progress__fill" style={{ transform: `scaleX(${progress / 100})` }} />
         </div>
       </div>
 
-      <h2 ref={headingRef} tabIndex={-1} className="t-sub" style={{ marginBottom: "0.5rem", outline: "none" }}>
-        {stepTitles[step]}
+      <h2 ref={headingRef} tabIndex={-1} className="t-sub" style={{ margin: "1.4rem 0 0.4rem", outline: "none" }}>
+        {steps[step].title}
       </h2>
+      <p className="hint" style={{ color: "var(--ink-soft)", maxWidth: "58ch" }}>
+        {steps[step].whyWeAsk}
+      </p>
 
       {state === "failed" && (
         <div className="status status--error" role="alert" style={{ marginBlock: "1rem" }}>
           <strong>We could not send your request.</strong>
           <p style={{ fontSize: "0.95rem" }}>
-            Your answers are still here — please try again in a moment. If it keeps failing, use the routes on
-            the <Link href="/contact" className="text-link">contact page</Link> and we will pick it up from
-            there.
+            Your answers are still here — please try again in a moment. If it keeps failing, use the routes
+            on the{" "}
+            <Link href="/contact" className="text-link">
+              contact page
+            </Link>{" "}
+            and we will pick it up from there.
           </p>
         </div>
       )}
@@ -244,10 +279,6 @@ export function ConsultationFlow() {
       <div style={{ display: "grid", gap: "1.25rem", marginTop: "1.25rem" }}>
         {step === 0 && (
           <>
-            <p className="hint" style={{ color: "var(--ink-soft)" }}>
-              We ask so your coordinator can plan around visas, flights, and time zones — and reply in the
-              right language.
-            </p>
             <div className="field">
               <label htmlFor="country">Country you are in</label>
               <input
@@ -267,7 +298,7 @@ export function ConsultationFlow() {
             </div>
             <div className="field">
               <label htmlFor="language">Preferred language</label>
-              <p className="hint">The language you are most comfortable discussing medical matters in.</p>
+              <p className="hint">The language you are most comfortable discussing your dental care in.</p>
               <input
                 id="language"
                 type="text"
@@ -286,34 +317,30 @@ export function ConsultationFlow() {
         )}
 
         {step === 1 && (
-          <fieldset style={{ border: 0, margin: 0, padding: 0, display: "grid", gap: "0.9rem" }}>
-            <legend className="hint" style={{ color: "var(--ink-soft)", padding: 0 }}>
-              Choose the closest option — this only routes your case to the right coordinator. It is not a
-              diagnosis and you can change it later.
-            </legend>
-            <div className="choice-grid" role="radiogroup" aria-label="Treatment or specialty">
-              {treatmentOptions.map((opt) => (
-                <div className="choice" key={opt.value}>
-                  <input
-                    type="radio"
-                    id={`treat-${opt.value}`}
-                    name="treatment"
-                    value={opt.value}
-                    checked={data.treatment === opt.value}
-                    onChange={() => set("treatment", opt.value)}
-                  />
-                  <label htmlFor={`treat-${opt.value}`}>{opt.label}</label>
-                </div>
-              ))}
-            </div>
-            {errors.treatment && <p className="field-error">{errors.treatment}</p>}
-          </fieldset>
-        )}
-
-        {step === 2 && (
           <>
             <fieldset style={{ border: 0, margin: 0, padding: 0, display: "grid", gap: "0.9rem" }}>
-              <legend style={{ fontWeight: 600, padding: 0, marginBottom: "0.4rem" }}>Who is this consultation for?</legend>
+              <legend style={{ fontWeight: 600, padding: 0, marginBottom: "0.4rem" }}>
+                Which is closest to what you are exploring?
+              </legend>
+              <div className="choice-grid" role="radiogroup" aria-label="Treatment or concern">
+                {treatmentOptions.map((opt) => (
+                  <div className="choice" key={opt.value}>
+                    <input
+                      type="radio"
+                      id={`treat-${opt.value}`}
+                      name="treatment"
+                      value={opt.value}
+                      checked={data.treatment === opt.value}
+                      onChange={() => set("treatment", opt.value)}
+                    />
+                    <label htmlFor={`treat-${opt.value}`}>{opt.label}</label>
+                  </div>
+                ))}
+              </div>
+              {errors.treatment && <p className="field-error">{errors.treatment}</p>}
+            </fieldset>
+            <fieldset style={{ border: 0, margin: 0, padding: 0, display: "grid", gap: "0.9rem" }}>
+              <legend style={{ fontWeight: 600, padding: 0, marginBottom: "0.4rem" }}>Who is this for?</legend>
               <div className="choice-grid">
                 {["Myself", "A family member", "Someone I care for"].map((w) => (
                   <div className="choice" key={w}>
@@ -332,11 +359,10 @@ export function ConsultationFlow() {
               {errors.forWhom && <p className="field-error">{errors.forWhom}</p>}
             </fieldset>
             <div className="field">
-              <label htmlFor="situation">Briefly describe the medical situation</label>
+              <label htmlFor="situation">Describe your dental concern</label>
               <p className="hint">
-                In your own words: what has been diagnosed or is suspected, what treatment has been advised,
-                and what you are hoping to arrange. Please do not include more detail than you are comfortable
-                sharing — reports can carry the specifics.
+                In your own words: what bothers you, what you would like to change, or the treatment you are
+                considering. No dental vocabulary required.
               </p>
               <textarea
                 id="situation"
@@ -354,7 +380,84 @@ export function ConsultationFlow() {
           </>
         )}
 
+        {step === 2 && (
+          <div className="field">
+            <label htmlFor="history">Previous diagnosis, treatment, or quotations (optional)</label>
+            <p className="hint">
+              For example: “my dentist said two teeth cannot be saved”, “I have a treatment plan from another
+              clinic”, or “nothing so far”. If you have a written plan or quotation, you can attach it in the
+              records step.
+            </p>
+            <textarea
+              id="history"
+              value={data.history}
+              onChange={(e) => set("history", e.target.value)}
+            />
+          </div>
+        )}
+
         {step === 3 && (
+          <>
+            <fieldset style={{ border: 0, margin: 0, padding: 0, display: "grid", gap: "0.9rem" }}>
+              <legend style={{ fontWeight: 600, padding: 0, marginBottom: "0.4rem" }}>How do things feel right now?</legend>
+              <div className="choice-grid">
+                {URGENCY_OPTIONS.map((u) => (
+                  <div className="choice" key={u}>
+                    <input
+                      type="radio"
+                      id={`urg-${u}`}
+                      name="urgency"
+                      value={u}
+                      checked={data.urgency === u}
+                      onChange={() => set("urgency", u)}
+                    />
+                    <label htmlFor={`urg-${u}`}>{u}</label>
+                  </div>
+                ))}
+              </div>
+              {errors.urgency && <p className="field-error">{errors.urgency}</p>}
+            </fieldset>
+            {urgent && (
+              <div className="status status--error" role="alert">
+                <strong>Worsening pain or swelling needs prompt in-person care.</strong>
+                <p style={{ fontSize: "0.95rem" }}>
+                  Please see a local dentist, doctor, or emergency service first — coordinated travel is not
+                  the right next step for an acute problem. You are welcome to continue this request for
+                  what comes after.
+                </p>
+              </div>
+            )}
+            <div className="field">
+              <label htmlFor="symptoms">Anything else about how it feels? (optional)</label>
+              <p className="hint">Sensitivity, loose teeth, bleeding gums, difficulty chewing — whatever you notice.</p>
+              <textarea id="symptoms" value={data.symptoms} onChange={(e) => set("symptoms", e.target.value)} />
+            </div>
+            <div className="field">
+              <label htmlFor="timeframe">When are you hoping to move forward?</label>
+              <select
+                id="timeframe"
+                value={data.timeframe}
+                aria-invalid={errors.timeframe ? true : undefined}
+                aria-describedby={errors.timeframe ? "timeframe-err" : undefined}
+                onChange={(e) => set("timeframe", e.target.value)}
+              >
+                <option value="">Choose one…</option>
+                {timeframes.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+              {errors.timeframe && (
+                <p className="field-error" id="timeframe-err">
+                  {errors.timeframe}
+                </p>
+              )}
+            </div>
+          </>
+        )}
+
+        {step === 4 && (
           <>
             <div className="field">
               <label htmlFor="name">Your name</label>
@@ -394,7 +497,11 @@ export function ConsultationFlow() {
             </fieldset>
             <div className="field">
               <label htmlFor="contactDetail">
-                {data.contactMethod === "Email" ? "Email address" : data.contactMethod ? "Number to reach you on" : "Email address or phone number"}
+                {data.contactMethod === "Email"
+                  ? "Email address"
+                  : data.contactMethod
+                    ? "Number to reach you on"
+                    : "Email address or phone number"}
               </label>
               <input
                 id="contactDetail"
@@ -412,41 +519,15 @@ export function ConsultationFlow() {
                 </p>
               )}
             </div>
-            <div className="field">
-              <label htmlFor="timeframe">When are you hoping to move forward?</label>
-              <select
-                id="timeframe"
-                value={data.timeframe}
-                aria-invalid={errors.timeframe ? true : undefined}
-                aria-describedby={errors.timeframe ? "timeframe-err" : undefined}
-                onChange={(e) => set("timeframe", e.target.value)}
-              >
-                <option value="">Choose one…</option>
-                {timeframes.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
-              {errors.timeframe && (
-                <p className="field-error" id="timeframe-err">
-                  {errors.timeframe}
-                </p>
-              )}
-            </div>
           </>
         )}
 
-        {step === 4 && (
+        {step === 5 && (
           <>
-            <p className="hint" style={{ color: "var(--ink-soft)" }}>
-              Reports help specialists respond precisely — but they are <strong>optional</strong>. You can
-              send them later, after we reply.
-            </p>
             <div className="upload-zone">
-              <p style={{ fontWeight: 600 }}>Attach medical reports</p>
+              <p style={{ fontWeight: 600 }}>Attach photographs, X-rays, scans, or records</p>
               <p className="hint" style={{ color: "var(--ink-soft)" }}>
-                PDF, JPG, PNG, or DOC · up to {MAX_SIZE_MB} MB each · up to {MAX_FILES} files
+                {uploadRequirements.accepted} · {uploadRequirements.maxSizeNote} · up to {MAX_FILES} files
               </p>
               <label className="btn btn--secondary" style={{ cursor: "pointer" }}>
                 Choose files
@@ -471,54 +552,84 @@ export function ConsultationFlow() {
                       {f.name} <span className="muted">({(f.size / 1024 / 1024).toFixed(1)} MB)</span>
                     </span>
                     <button type="button" onClick={() => set("files", data.files.filter((_, j) => j !== i))}>
-                      Remove<span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}> {f.name}</span>
+                      Remove
+                      <span style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0 0 0 0)" }}>
+                        {" "}
+                        {f.name}
+                      </span>
                     </button>
                   </li>
                 ))}
               </ul>
             )}
             <div className="form-callout">
-              <strong>How your reports are handled</strong>
-              <span>
-                Files are used only to review your case, are shared only with the specialists involved, and
-                are never used for marketing. Details are in our{" "}
-                <Link href="/privacy" className="text-link">
-                  privacy policy
-                </Link>
-                .
-              </span>
+              <strong>Helpful things to include</strong>
+              <ul style={{ margin: "0.4rem 0 0", paddingLeft: "1.1rem", display: "grid", gap: "0.3rem" }}>
+                {uploadRequirements.tips.map((tip) => (
+                  <li key={tip}>{tip}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="note-disclosure">
+              <strong>Upload preview.</strong> Secure record transfer is still being provisioned, so files
+              you select here are listed with your request but not transmitted yet. Your coordinator will
+              reply with a secure way to send them. {uploadRequirements.privacyNote}
             </div>
           </>
         )}
 
-        {step === 5 && (
+        {step === 6 && (
           <>
-            <dl className="defs" aria-label="Your answers">
-              <div>
-                <dt>Location &amp; language</dt>
-                <dd>
-                  {data.country} · {data.language}
-                </dd>
+            <div style={{ display: "grid", gap: "14px" }} aria-label="Your answers">
+              <div className="def-item">
+                <span className="def-item__dot" aria-hidden="true" />
+                <div>
+                  <strong>Location &amp; language</strong>
+                  <p>
+                    {data.country} · {data.language}
+                  </p>
+                </div>
               </div>
-              <div>
-                <dt>Care explored</dt>
-                <dd>{treatmentOptions.find((t) => t.value === data.treatment)?.label ?? "—"}</dd>
+              <div className="def-item">
+                <span className="def-item__dot" aria-hidden="true" />
+                <div>
+                  <strong>Concern</strong>
+                  <p>
+                    {treatmentOptions.find((t) => t.value === data.treatment)?.label ?? "—"} · for{" "}
+                    {data.forWhom.toLowerCase()}
+                  </p>
+                </div>
               </div>
-              <div>
-                <dt>For</dt>
-                <dd>{data.forWhom}</dd>
+              <div className="def-item">
+                <span className="def-item__dot" aria-hidden="true" />
+                <div>
+                  <strong>Urgency &amp; timeframe</strong>
+                  <p>
+                    {data.urgency} · {data.timeframe}
+                  </p>
+                </div>
               </div>
-              <div>
-                <dt>Contact</dt>
-                <dd>
-                  {data.name} · {data.contactMethod} · {data.contactDetail} · {data.timeframe}
-                </dd>
+              <div className="def-item">
+                <span className="def-item__dot" aria-hidden="true" />
+                <div>
+                  <strong>Contact</strong>
+                  <p>
+                    {data.name} · {data.contactMethod} · {data.contactDetail}
+                  </p>
+                </div>
               </div>
-              <div>
-                <dt>Reports attached</dt>
-                <dd>{data.files.length > 0 ? `${data.files.length} file${data.files.length > 1 ? "s" : ""}` : "None — that is fine"}</dd>
+              <div className="def-item">
+                <span className="def-item__dot" aria-hidden="true" />
+                <div>
+                  <strong>Records</strong>
+                  <p>
+                    {data.files.length > 0
+                      ? `${data.files.length} file${data.files.length > 1 ? "s" : ""} listed (sent securely after we reply)`
+                      : "None — that is fine"}
+                  </p>
+                </div>
               </div>
-            </dl>
+            </div>
             <div className="field" style={{ gap: "0.9rem" }}>
               <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
                 <input
@@ -526,14 +637,14 @@ export function ConsultationFlow() {
                   id="consentPrivacy"
                   checked={data.consentPrivacy}
                   onChange={(e) => set("consentPrivacy", e.target.checked)}
-                  style={{ width: 22, height: 22, minHeight: 0, marginTop: 3, accentColor: "var(--pine)" }}
+                  style={{ width: 22, height: 22, minHeight: 0, marginTop: 3, accentColor: "var(--papaya)" }}
                 />
                 <label htmlFor="consentPrivacy" style={{ fontWeight: 450 }}>
                   I have read how my information will be used (
                   <Link href="/privacy" className="text-link">
                     privacy policy
                   </Link>
-                  ) and consent to Medism reviewing my case.
+                  ) and consent to Medism processing my health information to review this request.
                 </label>
               </div>
               {errors.consentPrivacy && <p className="field-error">{errors.consentPrivacy}</p>}
@@ -543,11 +654,11 @@ export function ConsultationFlow() {
                   id="consentEmergency"
                   checked={data.consentEmergency}
                   onChange={(e) => set("consentEmergency", e.target.checked)}
-                  style={{ width: 22, height: 22, minHeight: 0, marginTop: 3, accentColor: "var(--pine)" }}
+                  style={{ width: 22, height: 22, minHeight: 0, marginTop: 3, accentColor: "var(--papaya)" }}
                 />
                 <label htmlFor="consentEmergency" style={{ fontWeight: 450 }}>
-                  I understand Medism is a coordination service, not an emergency service, and that this
-                  request is not for urgent medical needs.
+                  I understand Medism is a coordination service, not an emergency service or my treating
+                  dentist, and that submitting this request does not create a dentist–patient relationship.
                 </label>
               </div>
               {errors.consentEmergency && <p className="field-error">{errors.consentEmergency}</p>}
@@ -556,7 +667,7 @@ export function ConsultationFlow() {
         )}
       </div>
 
-      <div className="form-actions">
+      <div className="form-actions" style={{ marginTop: "1.6rem" }}>
         {step > 0 ? (
           <button type="button" className="btn btn--secondary" onClick={() => go(step - 1)}>
             Back
@@ -564,9 +675,11 @@ export function ConsultationFlow() {
         ) : (
           <span />
         )}
-        {step < 5 ? (
+        {step < steps.length - 1 ? (
           <button type="submit" className="btn btn--primary">
-            {step === 4 && data.files.length === 0 && !reportsIntent ? "Skip for now" : "Continue"}
+            {(step === 2 && !data.history.trim()) || (step === 5 && data.files.length === 0 && !recordsIntent)
+              ? "Skip for now"
+              : "Continue"}
           </button>
         ) : (
           <button type="submit" className="btn btn--primary" disabled={state === "sending"}>

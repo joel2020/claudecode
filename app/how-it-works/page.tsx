@@ -8,7 +8,7 @@ import { journey } from "@/lib/content";
 export const metadata: Metadata = {
   title: "How it works — your journey with Medism",
   description:
-    "The six steps of a Medism care journey: share your case, receive an initial review, compare specialists, plan travel, be supported through treatment, and continue into recovery.",
+    "The seven steps of a Medism dental journey: tell us what you need, share records, receive an initial review, understand your options, plan visits and travel, be supported during treatment, and continue into aftercare.",
 };
 
 export default function HowItWorksPage() {
@@ -19,11 +19,11 @@ export default function HowItWorksPage() {
           <div className="section-head">
             <p className="eyebrow">How it works</p>
             <h1 className="display" style={{ fontSize: "clamp(2.2rem, 1.4rem + 3.4vw, 3.6rem)" }}>
-              One route, from first conversation to recovery.
+              One clear path, from first message <em>to follow-up</em>.
             </h1>
             <p className="lede">
-              Seeking treatment away from home is stressful enough. The process should not add to it. Here is
-              exactly what happens after you contact Medism — and what each step asks of you.
+              Seeking dental treatment away from home is stressful enough. The process should not add to
+              it. Here is exactly what happens after you contact Medism — and what each step asks of you.
             </p>
           </div>
 
@@ -43,13 +43,13 @@ export default function HowItWorksPage() {
           <div className="panel" style={{ marginTop: "3rem", display: "grid", gap: "1rem" }}>
             <h2 className="t-sub">Where the boundaries are</h2>
             <p className="muted">
-              Medism coordinates. Doctors decide. At every step, diagnosis, treatment choices, and medical
-              advice come only from the licensed specialists and hospitals reviewing your case. If at any
-              point the right answer is to be treated close to home, we will tell you.
+              Medism coordinates. Dentists decide. At every step, diagnosis, treatment choices, and
+              clinical advice come only from the licensed dentists reviewing your case. If at any point the
+              right answer is to be treated close to home, we will tell you.
             </p>
             <div className="contact-routes">
               <Link href="/consultation" className="btn btn--primary">
-                Start with a Care Consultation <ArrowRight />
+                Request a Dental Consultation <ArrowRight />
               </Link>
             </div>
           </div>

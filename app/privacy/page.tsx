@@ -21,9 +21,9 @@ export default function PrivacyPage() {
         <div style={{ display: "grid", gap: "1.25rem", color: "var(--ink-soft)" }}>
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>What we collect</h2>
           <p>
-            When you request a care consultation, we collect the information you choose to share: your name,
-            location, preferred language, contact details, a description of your medical situation, and any
-            medical reports you attach. Attaching reports is optional.
+            When you request a dental consultation, we collect the information you choose to share: your
+            name, location, preferred language, contact details, a description of your dental concern, and
+            any photographs, X-rays, scans, or records you attach. Attaching records is optional.
           </p>
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>Why we collect it</h2>
           <p>
@@ -34,8 +34,8 @@ export default function PrivacyPage() {
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>Who sees it</h2>
           <p>
             Your case is seen by the Medism care coordinators handling it and, with your consent, by the
-            specialists and hospitals evaluating your case. We do not sell personal information and do not
-            use medical information for marketing.
+            dentists and clinics evaluating your case. We do not sell personal information and do not use
+            health information for marketing.
           </p>
           <h2 className="t-sub" style={{ color: "var(--ink)" }}>Your choices</h2>
           <p>

@@ -141,10 +141,22 @@ export default function HomePage() {
               Understand your options <em>before deciding</em>.
             </h2>
             <p className="lede">
-              Most people arrive with the same worries: Will it hurt? Is it safe? What will it really cost?
-              What if something goes wrong far from home? Medism exists to answer those questions honestly —
-              before you commit to anything.
+              Most people arrive with the same worries. Medism exists to answer them honestly — before you
+              commit to anything.
             </p>
+            <ul className="worry-list" aria-label="The questions we answer first">
+              {[
+                "Will it hurt?",
+                "Is it safe?",
+                "What will it really cost?",
+                "Can I trust the quality?",
+                "How does the travel work?",
+                "What about recovery?",
+                "Who follows up afterwards?",
+              ].map((w) => (
+                <li key={w}>{w}</li>
+              ))}
+            </ul>
             <p className="muted" style={{ maxWidth: "56ch" }}>
               No pressure, no countdown timers, no sales scripts. A clear picture of what is possible, what
               it involves, what it costs — and enough time to decide at your own pace.

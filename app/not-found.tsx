@@ -15,7 +15,7 @@ export default function NotFound() {
             Go to the homepage <ArrowRight />
           </Link>
           <Link href="/consultation" className="btn btn--secondary">
-            Request a Care Consultation
+            Request a Dental Consultation
           </Link>
         </div>
       </div>
