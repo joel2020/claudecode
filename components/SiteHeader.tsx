@@ -18,11 +18,6 @@ export function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close the menu on navigation and restore body scroll.
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => {
@@ -78,7 +73,8 @@ export function SiteHeader() {
       </div>
     </header>
     <div id="mobile-menu" className="mobile-menu" data-open={open}>
-        <nav aria-label="Main menu">
+        {/* Links close the menu on activation; navigation itself is native. */}
+        <nav aria-label="Main menu" onClick={() => setOpen(false)}>
           {nav.map((item) => (
             <Link key={item.href} href={item.href} aria-current={current(item.href)}>
               {item.label}

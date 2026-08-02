@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowRight } from "@/components/icons";
 import { Photo } from "@/components/Photo";
 import { Reveal } from "@/components/Reveal";
+import { Parallax } from "@/components/Parallax";
 import { Faq } from "@/components/Faq";
 import { CtaSection } from "@/components/CtaSection";
 import {
@@ -74,22 +75,27 @@ export default function HomePage() {
             </p>
           </Reveal>
           <Reveal delay={0.15}>
-            <figure className="hero__figure" style={{ margin: 0 }}>
-              <Image
-                src="/images/hero-consultation.webp"
-                alt="A patient and a Medism care coordinator talking together on a bench in a sunlit clinic lounge"
-                fill
-                priority
-                sizes="(max-width: 900px) 100vw, 42vw"
-              />
-            </figure>
+            <Parallax amount={5}>
+              <figure className="hero__figure" style={{ margin: 0 }}>
+                <Image
+                  src="/images/hero-consultation.webp"
+                  alt="A patient and a Medism care coordinator talking together on a bench in a sunlit clinic lounge"
+                  fill
+                  priority
+                  sizes="(max-width: 900px) 100vw, 42vw"
+                />
+              </figure>
+            </Parallax>
           </Reveal>
         </div>
       </section>
 
       {/* 3 — Immediate service strip */}
-      <section className="section--paper section--tight" aria-label="How to start">
+      <section className="section--paper section--tight" aria-labelledby="start-heading">
         <div className="container">
+          <h2 id="start-heading" className="sr-only">
+            How to start
+          </h2>
           <Reveal className="svc-strip" stagger={0.06}>
             <Link href={ctas.primary.href} className="svc-item">
               <span className="icon-chip" aria-hidden="true">
@@ -370,13 +376,15 @@ export default function HomePage() {
       <section id="patient-story" className="section" aria-labelledby="story-heading">
         <div className="container split">
           <Reveal>
-            <Photo
-              src="/images/story-portrait.webp"
-              alt="Portrait placeholder: a man smiling naturally by a sunlit window"
-              brief="Verified patient story portrait"
-              ratio="4 / 5"
-              arch
-            />
+            <Parallax amount={4}>
+              <Photo
+                src="/images/story-portrait.webp"
+                alt="Portrait placeholder: a man smiling naturally by a sunlit window"
+                brief="Verified patient story portrait"
+                ratio="4 / 5"
+                arch
+              />
+            </Parallax>
           </Reveal>
           <Reveal className="story">
             <p className="eyebrow">A patient&rsquo;s story</p>
